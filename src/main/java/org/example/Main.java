@@ -12,6 +12,7 @@ public class Main {
 
         while(!WindowShouldClose()){
 
+            chessBoard.Update(GetFrameTime());
 
             ClearBackground(RAYWHITE);
             BeginDrawing();

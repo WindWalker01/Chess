@@ -12,13 +12,16 @@ public class Board {
 
     private final int COLUMN = 8;
     private final int ROW = 8;
-    private Texture squareTexture = LoadTexture("src/main/resources/square.png");
 
     private int[][] square = new int[8][8];
+    private int piecePicked;
+    private boolean isHolding = false;
+
 
     private final Jaylib.Color BLACKTILE = new Jaylib.Color(119, 149, 86, 255);
     private final Jaylib.Color WHITETILE = new Jaylib.Color(235, 236, 208, 255);
 
+    private Texture squareTexture = LoadTexture("src/main/resources/square.png");
     private Texture bishopBlack = LoadTexture("src/main/resources/Piece=Bishop, Side=Black.png");
     private Texture pawnBlack = LoadTexture("src/main/resources/Piece=Pawn, Side=Black.png");
     private Texture knightBlack = LoadTexture("src/main/resources/Piece=Knight, Side=Black.png");
@@ -79,24 +82,50 @@ public class Board {
                 DrawTextureV(squareTexture, new Jaylib.Vector2(row * 100, col * 100), (row + col) % 2 == 0 ? WHITETILE : BLACKTILE);
 
                 
-                switch (square[col][row]){
-                    case Piece.Pawn | Piece.White ->  DrawTexture(pawnWhite, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Knight | Piece.White ->  DrawTexture(knightWhite, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Bishop | Piece.White ->  DrawTexture(bishopWhite, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Rook | Piece.White ->  DrawTexture(rookWhite, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Queen | Piece.White ->  DrawTexture(queenWhite, 100 * row, col * 100, RAYWHITE);
-                    case Piece.King | Piece.White ->  DrawTexture(kingWhite, 100 * row, col * 100, RAYWHITE);
-
-                    case Piece.Pawn | Piece.Black ->  DrawTexture(pawnBlack, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Knight | Piece.Black ->  DrawTexture(knightBlack, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Bishop | Piece.Black ->  DrawTexture(bishopBlack, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Rook | Piece.Black ->  DrawTexture(rookBlack, 100 * row, col * 100, RAYWHITE);
-                    case Piece.Queen | Piece.Black ->  DrawTexture(queenBlack, 100 * row, col * 100, RAYWHITE);
-                    case Piece.King | Piece.Black ->  DrawTexture(kingBlack, 100 * row, col * 100, RAYWHITE);
-                }
+                DrawPiece(square[col][row], col * 100, row * 100);
             }
         }
 
+        if(IsMouseButtonDown(0)){
+            System.out.println((int)GetMousePosition().x() + " : " + (int)GetMousePosition().y());
+            DrawPiece(piecePicked, (int)(GetMousePosition().y() - 50), (int)(GetMousePosition().x() - 50));
+            isHolding = true;
+        }
+    }
+
+    public void Update(double delta){
+
+        int rowPicked = (int)GetMousePosition().x() / 100;
+        int colPicked = (int)GetMousePosition().y() / 100;
+
+        if(IsMouseButtonPressed(0)){
+
+            piecePicked = square[colPicked][rowPicked];
+            square[colPicked][rowPicked] = Piece.None;
+        }else if(isHolding && IsMouseButtonReleased(0)){
+            square[colPicked][rowPicked] = piecePicked;
+            piecePicked = Piece.None;
+            isHolding = false;
+        }
+
+    }
+
+    public void DrawPiece(int piece, int col, int row){
+        switch (piece){
+            case Piece.Pawn | Piece.White ->  DrawTexture(pawnWhite, row, col, WHITE);
+            case Piece.Knight | Piece.White ->  DrawTexture(knightWhite, row, col, WHITE);
+            case Piece.Bishop | Piece.White ->  DrawTexture(bishopWhite, row, col, WHITE);
+            case Piece.Rook | Piece.White ->  DrawTexture(rookWhite, row, col, WHITE);
+            case Piece.Queen | Piece.White ->  DrawTexture(queenWhite, row, col, WHITE);
+            case Piece.King | Piece.White ->  DrawTexture(kingWhite, row, col, WHITE);
+
+            case Piece.Pawn | Piece.Black ->  DrawTexture(pawnBlack, row, col, WHITE);
+            case Piece.Knight | Piece.Black ->  DrawTexture(knightBlack, row, col, WHITE);
+            case Piece.Bishop | Piece.Black ->  DrawTexture(bishopBlack, row, col, WHITE);
+            case Piece.Rook | Piece.Black ->  DrawTexture(rookBlack, row, col, WHITE);
+            case Piece.Queen | Piece.Black ->  DrawTexture(queenBlack, row, col, WHITE);
+            case Piece.King | Piece.Black ->  DrawTexture(kingBlack, row, col, WHITE);
+        }
     }
 
 }
